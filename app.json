@@ -1,0 +1,18 @@
+{
+  "name": "Bot de apt",
+  "description": "Faz o apt de forma automagica",
+  "repository": "https://github.com/igorventurelli/apt",
+  "logo": "https://cdn4.iconfinder.com/data/icons/space-and-astronomy-1/800/robot-512.png",
+  "env": {
+    "APT_AUTH": {
+      "description": "Auth do apt"
+    },
+    "URL": {
+      "description": "URL do apt"
+    },
+    "TZ": {
+      "description": "Timezone",
+      "value": "America/Sao_Paulo"
+    }
+  }
+}

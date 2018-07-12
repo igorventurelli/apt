@@ -1,6 +1,6 @@
 import datetime
 import logging
-import requests 
+import requests
 import os
 import sys
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -42,28 +42,28 @@ def eh_feriado():
     return False
 
 
-@sched.scheduled_job('cron', id='job-entrada', day_of_week='mon-fri', hour='08', minute='00')
+@sched.scheduled_job('cron', id='job-entrada', day_of_week='mon-fri', hour='08', minute='01')
 def aponta_entrada():
     if not eh_feriado():
         aponta('start')
         logging.info('>>> Entrada')
 
 
-@sched.scheduled_job('cron', id='job-inicio-almoco', day_of_week='mon-fri', hour='12', minute='00')
+@sched.scheduled_job('cron', id='job-inicio-almoco', day_of_week='mon-fri', hour='12', minute='01')
 def aponta_inicio_almoco():
     if not eh_feriado():
         aponta('finish')
         logging.info('>>> Início almoço')
 
 
-@sched.scheduled_job('cron', id='job-fim-almoco', day_of_week='mon-fri', hour='13', minute='00')
+@sched.scheduled_job('cron', id='job-fim-almoco', day_of_week='mon-fri', hour='13', minute='01')
 def aponta_fim_almoco():
     if not eh_feriado():
         aponta('start')
         logging.info('<<< Volta do almoço')
 
 
-@sched.scheduled_job('cron', id='saida', day_of_week='mon-fri', hour='17', minute='00')
+@sched.scheduled_job('cron', id='saida', day_of_week='mon-fri', hour='17', minute='01')
 def aponta_saida():
     if not eh_feriado():
         aponta('finish')

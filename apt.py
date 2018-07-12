@@ -1,5 +1,7 @@
 import datetime
 import logging
+import requests
+import os
 import sys
 from apscheduler.schedulers.blocking import BlockingScheduler
 

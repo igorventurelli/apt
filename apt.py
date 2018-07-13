@@ -107,8 +107,8 @@ def aponta(entrada_ou_saida):
     if response.status_code != 200:
         print('Erro ao apontar!')
         print('HTTP Status:', response.status_code)
-        print('Response body:', response.text)
         print('Request body:', body)
+        print('Response body:', response.text)
 
 
 sched.start()

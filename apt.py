@@ -8,6 +8,15 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 sched = BlockingScheduler()
 FERIADOS = [
     datetime.date(2018, 7, 9),
+    datetime.date(2018, 7, 18),
+    datetime.date(2018, 7, 19),
+    datetime.date(2018, 7, 20),
+    datetime.date(2018, 7, 21),
+    datetime.date(2018, 7, 22),
+    datetime.date(2018, 7, 23),
+    datetime.date(2018, 7, 24),
+    datetime.date(2018, 7, 25),
+    datetime.date(2018, 7, 26),
     datetime.date(2018, 7, 27),
     datetime.date(2018, 9, 7),
     datetime.date(2018, 10, 12),

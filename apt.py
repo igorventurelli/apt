@@ -1,6 +1,7 @@
 import datetime
 import logging
 import requests
+from random import randint
 import os
 import sys
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -31,6 +32,24 @@ FERIADOS = [
     datetime.date(2018, 12, 31),
     datetime.date(2019, 1, 1),
     datetime.date(2019, 1, 2)
+]
+
+LOCALIZACOES = [
+    {
+        'lat': '-23.2279589',
+        'lng': '-45.8572695',
+        'address': 'Av. Brg. Faria Lima, 601'
+    },
+    {
+        'lat': '-23.21897476',
+        'lng': '-45.85305484',
+        'address': 'Estr. Mun. Glaudistom Pereira de Oliveira, 270'
+    },
+    {
+        'lat': '-23.22952045',
+        'lng': '-45.85532742',
+        'address': 'Av. Dr. Amin Simão, 897'
+    }
 ]
 
 logging.getLogger('apscheduler.executors.default').propagate = False
@@ -82,12 +101,12 @@ def aponta_saida():
 def aponta(entrada_ou_saida):
     headers = {'auth': os.environ['APT_AUTH'],
                'Content-Type':'application/json'}
-    body = {'lat': '-23.2279589',
-            'lng': '-45.8572695',
-            'address': 'Av. Brg. Faria Lima, 601'}
+    body = LOCALIZACOES[randint(0, 2)]
+    
     response = requests.post(os.environ['APT_URL'] + entrada_ou_saida, headers=headers, json=body)
     print(response.status_code)
     print(response.text)
+    print(body)
 
 
 sched.start()

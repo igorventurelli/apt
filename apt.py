@@ -104,9 +104,11 @@ def aponta(entrada_ou_saida):
     body = LOCALIZACOES[randint(0, 2)]
     
     response = requests.post(os.environ['APT_URL'] + entrada_ou_saida, headers=headers, json=body)
-    print(response.status_code)
-    print(response.text)
-    print(body)
+    if response.status_code != 200:
+        print('Erro ao apontar!')
+        print('HTTP Status:', response.status_code)
+        print('Response body:', response.text)
+        print('Request body:', body)
 
 
 sched.start()

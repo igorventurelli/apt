@@ -64,6 +64,7 @@ JOB_HORA_SAIDA = '17'
 
 START = 'start'
 FINISH = 'finish'
+MINUTO_PADRAO = '01'
 
 logging.getLogger('apscheduler.executors.default').propagate = False
 root = logging.getLogger()
@@ -83,41 +84,40 @@ def eh_feriado():
     return False
 
 
-@sched.scheduled_job('cron', id=JOB_ID_ENTRADA, day_of_week='mon-fri', hour=JOB_HORA_ENTRADA, minute='01')
+@sched.scheduled_job('cron', id=JOB_ID_ENTRADA, day_of_week='mon-fri', hour=JOB_HORA_ENTRADA, minute=MINUTO_PADRAO)
 def aponta_entrada():
-    if not eh_feriado():
-        aponta(JOB_ID_ENTRADA, START, '>>> Entrada', JOB_HORA_ENTRADA)
+    aponta(JOB_ID_ENTRADA, START, '>>> Entrada', JOB_HORA_ENTRADA)
 
 
-@sched.scheduled_job('cron', id=JOB_ID_INICIO_ALMOCO, day_of_week='mon-fri', hour=JOB_HORA_INICIO_ALMOCO, minute='17')
+@sched.scheduled_job('cron', id=JOB_ID_INICIO_ALMOCO, day_of_week='mon-fri', hour=JOB_HORA_INICIO_ALMOCO, minute=MINUTO_PADRAO)
 def aponta_inicio_almoco():
-    if not eh_feriado():
-        aponta(JOB_ID_INICIO_ALMOCO, FINISH, '>>> Início almoço', JOB_HORA_INICIO_ALMOCO)
+    aponta(JOB_ID_INICIO_ALMOCO, FINISH, '>>> Início almoço', JOB_HORA_INICIO_ALMOCO)
 
 
-@sched.scheduled_job('cron', id=JOB_ID_FIM_ALMOCO, day_of_week='mon-fri', hour=JOB_HORA_FIM_ALMOCO, minute='01')
+@sched.scheduled_job('cron', id=JOB_ID_FIM_ALMOCO, day_of_week='mon-fri', hour=JOB_HORA_FIM_ALMOCO, minute=MINUTO_PADRAO)
 def aponta_fim_almoco():
-    if not eh_feriado():
-        aponta(JOB_ID_FIM_ALMOCO, START, '<<< Volta do almoço', JOB_HORA_FIM_ALMOCO)
+    aponta(JOB_ID_FIM_ALMOCO, START, '<<< Volta do almoço', JOB_HORA_FIM_ALMOCO)
 
 
-@sched.scheduled_job('cron', id=JOB_ID_SAIDA, day_of_week='mon-fri', hour=JOB_HORA_SAIDA, minute='01')
+@sched.scheduled_job('cron', id=JOB_ID_SAIDA, day_of_week='mon-fri', hour=JOB_HORA_SAIDA, minute=MINUTO_PADRAO)
 def aponta_saida():
-    if not eh_feriado():
-        aponta(JOB_ID_SAIDA, FINISH, '<<< Saída', JOB_HORA_SAIDA)
+    aponta(JOB_ID_SAIDA, FINISH, '<<< Saída', JOB_HORA_SAIDA)
 
 
 def aponta(job_id, entrada_ou_saida, log_msg, hora):
+    if eh_feriado():
+        return
+
     headers = {'auth': os.environ['APT_AUTH'],
                'Content-Type': 'application/json'}
     body = LOCALIZACOES[randint(0, 2)]
     
-    #response = requests.post(os.environ['APT_URL'] + entrada_ou_saida, headers=headers, json=body)
-    #if response.status_code != 200:
-        #print('Erro ao apontar!')
-        #print('HTTP Status:', response.status_code)
-        #print('Request body:', body)
-        #print('Response body:', response.text)
+    response = requests.post(os.environ['APT_URL'] + entrada_ou_saida, headers=headers, json=body)
+    if response.status_code != 200:
+        print('Erro ao apontar!')
+        print('HTTP Status:', response.status_code)
+        print('Request body:', body)
+        print('Response body:', response.text)
     
     logging.info(log_msg)
     minuto = randint(0, 4)

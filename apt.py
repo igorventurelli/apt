@@ -104,12 +104,34 @@ def aponta_saida():
     aponta(JOB_ID_SAIDA, FINISH, '<<< Saída', JOB_HORA_SAIDA)
 
 
+@sched.scheduled_job('cron', id='reschedule_jobs', day_of_week='mon-fri', hour='23', minute='30')
+def reschedula_jobs():
+    offset_dia = randint(0, 4)
+    offset_almoco = randint(0, 4)
+
+    sched.reschedule_job(JOB_ID_ENTRADA, trigger='cron', hour=JOB_HORA_ENTRADA, minute=offset_dia)
+    loga_job_reschedulado(JOB_ID_ENTRADA, JOB_HORA_ENTRADA, offset_dia)
+
+    sched.reschedule_job(JOB_ID_SAIDA, trigger='cron', hour=JOB_HORA_SAIDA, minute=offset_dia)
+    loga_job_reschedulado(JOB_ID_SAIDA, JOB_HORA_SAIDA, offset_dia)
+
+    sched.reschedule_job(JOB_ID_INICIO_ALMOCO, trigger='cron', hour=JOB_HORA_INICIO_ALMOCO, minute=offset_almoco)
+    loga_job_reschedulado(JOB_ID_INICIO_ALMOCO, JOB_HORA_INICIO_ALMOCO, offset_almoco)
+
+    sched.reschedule_job(JOB_ID_FIM_ALMOCO, trigger='cron', hour=JOB_HORA_FIM_ALMOCO, minute=offset_almoco)
+    loga_job_reschedulado(JOB_ID_FIM_ALMOCO, JOB_HORA_FIM_ALMOCO, offset_almoco)
+
+
+def loga_job_reschedulado(job_id, hora, minuto):
+    reschedule_msg = 'O job {} foi reschedulado para {}:0{}'.format(job_id, hora, minuto)
+    logging.info(reschedule_msg)
+
+
 def aponta(job_id, entrada_ou_saida, log_msg, hora):
     if eh_feriado():
         return
 
-    headers = {'auth': os.environ['APT_AUTH'],
-               'Content-Type': 'application/json'}
+    headers = {'auth': os.environ['APT_AUTH'], 'Content-Type': 'application/json'}
     body = LOCALIZACOES[randint(0, 2)]
     
     response = requests.post(os.environ['APT_URL'] + entrada_ou_saida, headers=headers, json=body)
@@ -120,10 +142,6 @@ def aponta(job_id, entrada_ou_saida, log_msg, hora):
         print('Response body:', response.text)
     
     logging.info(log_msg)
-    minuto = randint(0, 4)
-    sched.reschedule_job(job_id, trigger='cron', hour=hora, minute=minuto)
-    reschedule_msg = 'Job {} reschedulado para {}:0{}'.format(job_id, hora, minuto)
-    logging.info(reschedule_msg)
 
 
 sched.start()

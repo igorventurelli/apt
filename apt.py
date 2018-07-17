@@ -4,9 +4,6 @@ import requests
 from random import randint
 import os
 import sys
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
@@ -126,7 +123,7 @@ def reschedula_jobs():
 
 
 def loga_job_reschedulado(job_id, hora, minuto):
-    reschedule_msg = 'Job {} reschedulado para {}:0{}'.format(job_id, hora, minuto)
+    reschedule_msg = 'O job {} foi reschedulado para {}:0{}'.format(job_id, hora, minuto)
     logging.info(reschedule_msg)
 
 
@@ -143,34 +140,8 @@ def aponta(job_id, entrada_ou_saida, log_msg, hora):
         print('HTTP Status:', response.status_code)
         print('Request body:', body)
         print('Response body:', response.text)
-        envia_email(headers, body, response.status_code, response.text)
     
     logging.info(log_msg)
-
-
-def envia_email(request_headers, request_body, response_status_code, response_body):
-    email_de = os.environ['APT_EMAIL_FROM']
-    email_para = os.environ['APT_EMAIL_TO']
-    msg = MIMEMultipart()
-    msg['From'] = email_de
-    msg['To'] = email_para
-    msg['Subject'] = 'Problema no apt!'
-
-    body = '<h3>Deu um problema no apt:</h3>' + \
-           '<fieldset><legend>Request</legend>' + \
-           '<b>Header<b>: {}<br><b>Body<b>: {}</fieldset><br>' + \
-           '<fieldset><legend>Response</legend>' + \
-           '<b>Status</b>: {}<br><b>Body</b>: {}</fieldset>'
-    final_body = body.format(request_headers, request_body, response_status_code, response_body)
-    print(final_body)
-    msg.attach(MIMEText(final_body, 'html'))
-
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(email_de, os.environ['APT_EMAIL_PASS'])
-    text = msg.as_string()
-    server.sendmail(email_de, email_para, text)
-    server.quit()
 
 
 sched.start()
